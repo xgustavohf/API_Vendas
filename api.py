@@ -10,7 +10,7 @@ def homepage():
 
 @app.route('/vendas')
 def pegarvendas():
-    tabela = pd.read_csv(r'C:\Users\Gustavo\Desktop\CursoDio\IA\vendas.csv')
+    tabela = pd.read_csv('vendas.csv')
     
     colunas_relevantes = [
         'id', 'nome_completo', 'cpf', 'rg', 'data_nascimento', 'idade', 'sexo',
