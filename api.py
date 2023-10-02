@@ -8,7 +8,7 @@ app = Flask(__name__)
 def homepage():
     return 'A API está funcionando'
 
-@app.route('/pegarvendas')
+@app.route('/vendas')
 def pegarvendas():
     tabela = pd.read_csv(r'C:\Users\Gustavo\Desktop\CursoDio\IA\vendas.csv')
     
