@@ -12,7 +12,6 @@ def homepage():
 def pegarvendas():
     tabela = pd.read_csv(r'C:\Users\Gustavo\Desktop\CursoDio\IA\vendas.csv')
     
-    # Seleciona todas as colunas relevantes, incluindo as vendas mensais e o status_financeiro
     colunas_relevantes = [
         'id', 'nome_completo', 'cpf', 'rg', 'data_nascimento', 'idade', 'sexo',
         'email', 'uf', 'cep', 'cidade', 'endereço', 'telefone',
@@ -63,10 +62,8 @@ def pegarvendas():
         outros_campos['total_vendas'] = row['total_vendas']
         outros_campos['status_financeiro'] = row['status_financeiro']
         
-        # Adicione o dicionário de outros campos ao dicionário do cliente
         cliente['outros_campos'] = outros_campos
         
-        # Adicione o cliente ao resultado
         resposta.append(cliente)
     
     return jsonify(resposta)
