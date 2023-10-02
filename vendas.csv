@@ -1,0 +1,11 @@
+id,nome_completo,cpf,rg,data_nascimento,idade,sexo,email,uf,cep,cidade,endereço,telefone,janeiro,fevereiro,março,abril,maio,junho,julho,agosto,setembro,outubro,novembro,dezembro,total_vendas,status_financeiro
+1,João da Silva,123.456.789-01,9876543,15/08/1980,42,M,joao.silva@email.com,SP,12345-678,São Paulo,Rua A,1234567890,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,11700,
+2,Maria Souza,987.654.321-02,5432167,22/03/1995,28,F,maria.souza@email.com,RJ,98765-432,Rio de Janeiro,Avenida B,9876543210,400,450,500,550,600,650,700,750,800,850,900,950,8550,
+3,Carlos Pereira,456.789.123-03,1234567,10/11/1989,33,M,carlos.pereira@email.com,MG,45678-901,Belo Horizonte,Travessa C,9871234560,300,350,400,450,500,550,600,650,700,750,800,850,7650,
+4,Ana Oliveira,321.654.987-04,7654321,05/06/1975,47,F,ana.oliveira@email.com,RS,23456-789,Porto Alegre,Rua D,6547891230,200,250,300,350,400,450,500,550,600,650,700,750,5850,
+5,Pedro Santos,654.321.987-05,8901234,30/09/2000,22,M,pedro.santos@email.com,BA,34567-890,Salvador,Avenida E,7891234567,100,150,200,250,300,350,400,450,500,550,600,650,4950,
+6,Ana Rodrigues,135.246.789-06,5432109,18/07/1987,36,F,ana.rodrigues@email.com,PR,67890-123,Curitiba,Rua F,9876543210,300,350,400,450,500,550,600,650,700,750,800,850,7650,
+7,Paulo Lima,987.654.321-07,9876543,03/12/1993,29,M,paulo.lima@email.com,SC,12345-678,Florianópolis,Avenida G,1234567890,600,650,700,750,800,850,900,950,1000,1050,1100,1150,9900,
+8,Marina Alves,456.789.123-08,2345678,25/05/1982,41,F,marina.alves@email.com,CE,98765-432,Fortaleza,Rua H,6547891230,400,450,500,550,600,650,700,750,800,850,900,950,8550,
+9,Lucas Fernandes,654.321.987-09,4567890,12/03/1998,25,M,lucas.fernandes@email.com,PE,34567-890,Recife,Avenida I,7891234567,200,250,300,350,400,450,500,550,600,650,700,750,5850,
+10,Rafaela Santos,123.456.789-10,6789012,20/01/1985,38,F,rafaela.santos@email.com,GO,56789-012,Goiânia,Rua J,9876543210,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,11700,
