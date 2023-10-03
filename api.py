@@ -1,9 +1,24 @@
 import pandas as pd
 from flask import Flask, jsonify
+import mysql.connector
 from collections import OrderedDict
-from chatgpt import gerar_mensagem_chatgpt, conectar_bd 
+from chatgpt import gerar_mensagem_chatgpt 
 
 app = Flask(__name__)
+
+def conectar_bd():
+    try:
+        conexao = mysql.connector.connect(
+            host='localhost',
+            port=3307,
+            user='root',
+            password='root',
+            database='ghf_api'
+        )
+        return conexao
+    except mysql.connector.Error as e:
+        print(f"Erro ao conectar ao banco de dados: {e}")
+        return None
 
 @app.route('/')
 def homepage():
@@ -11,12 +26,10 @@ def homepage():
 
 @app.route('/pegarvendas')
 def pegarvendas():
-   
     conexao = conectar_bd()
     
     if conexao is None:
         return jsonify({"erro": "Não foi possível conectar ao banco de dados"})
-    
     
     consulta_sql = """
     SELECT idvendas, nome_completo, cpf, rg, data_nascimento, idade, sexo, email, uf, cep, cidade, endereco, telefone,
@@ -33,11 +46,11 @@ def pegarvendas():
     cursor.close()
     conexao.close()
     
-    
     colunas = [i[0] for i in cursor.description]
     tabela = pd.DataFrame(resultado, columns=colunas)
     
-    tabela['total_vendas'] = tabela.iloc[:, 13:25].sum(axis=1)  # Realiza a soma das vendas mensais
+    # Realiza a soma das vendas mensais
+    tabela['total_vendas'] = tabela.iloc[:, 13:25].sum(axis=1)
     
     resposta = []
     
@@ -73,8 +86,7 @@ def pegarvendas():
         outros_campos['total_vendas'] = row['total_vendas']
         outros_campos['meta'] = row['meta']
 
-        
-        mensagem_chatgpt = gerar_mensagem_chatgpt() 
+        mensagem_chatgpt = gerar_mensagem_chatgpt()  # Chama a função do arquivo chatgpt
         
         outros_campos['status_financeiro'] = mensagem_chatgpt
         
