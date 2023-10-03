@@ -1,6 +1,7 @@
 import pandas as pd
 from flask import Flask, jsonify
 from collections import OrderedDict
+from chatgpt import gerar_mensagem_chatgpt, conectar_bd 
 
 app = Flask(__name__)
 
@@ -8,32 +9,42 @@ app = Flask(__name__)
 def homepage():
     return 'A API está funcionando'
 
-@app.route('/vendas')
+@app.route('/pegarvendas')
 def pegarvendas():
-    tabela = pd.read_csv('vendas.csv')
-    
-    colunas_relevantes = [
-        'id', 'nome_completo', 'cpf', 'rg', 'data_nascimento', 'idade', 'sexo',
-        'email', 'uf', 'cep', 'cidade', 'endereço', 'telefone',
-        'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
-        'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro',
-        'total_vendas', 'status_financeiro'
-    ]
-    
-    resultado = tabela[colunas_relevantes]
-    
    
-    resultado['total_vendas'] = resultado.iloc[:, 13:25].sum(axis=1)
+    conexao = conectar_bd()
     
+    if conexao is None:
+        return jsonify({"erro": "Não foi possível conectar ao banco de dados"})
+    
+    
+    consulta_sql = """
+    SELECT idvendas, nome_completo, cpf, rg, data_nascimento, idade, sexo, email, uf, cep, cidade, endereco, telefone,
+    janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro,
+    total_vendas, meta, status_financeiro
+    FROM vendas
+    """
+    
+    cursor = conexao.cursor()
+    cursor.execute(consulta_sql)
+    
+    resultado = cursor.fetchall()
+    
+    cursor.close()
+    conexao.close()
+    
+    
+    colunas = [i[0] for i in cursor.description]
+    tabela = pd.DataFrame(resultado, columns=colunas)
+    
+    tabela['total_vendas'] = tabela.iloc[:, 13:25].sum(axis=1)  # Realiza a soma das vendas mensais
     
     resposta = []
     
-    for _, row in resultado.iterrows():
-        
+    for _, row in tabela.iterrows():
         cliente = OrderedDict()
+        cliente['idvendas'] = row['idvendas']
         
-        cliente['id'] = row['id']
-          
         outros_campos = OrderedDict()
         outros_campos['nome_completo'] = row['nome_completo']
         outros_campos['cpf'] = row['cpf']
@@ -45,11 +56,11 @@ def pegarvendas():
         outros_campos['uf'] = row['uf']
         outros_campos['cep'] = row['cep']
         outros_campos['cidade'] = row['cidade']
-        outros_campos['endereço'] = row['endereço']
+        outros_campos['endereco'] = row['endereco']
         outros_campos['telefone'] = row['telefone']
         outros_campos['janeiro'] = row['janeiro']
         outros_campos['fevereiro'] = row['fevereiro']
-        outros_campos['março'] = row['março']
+        outros_campos['marco'] = row['marco']
         outros_campos['abril'] = row['abril']
         outros_campos['maio'] = row['maio']
         outros_campos['junho'] = row['junho']
@@ -60,7 +71,12 @@ def pegarvendas():
         outros_campos['novembro'] = row['novembro']
         outros_campos['dezembro'] = row['dezembro']
         outros_campos['total_vendas'] = row['total_vendas']
-        outros_campos['status_financeiro'] = row['status_financeiro']
+        outros_campos['meta'] = row['meta']
+
+        
+        mensagem_chatgpt = gerar_mensagem_chatgpt() 
+        
+        outros_campos['status_financeiro'] = mensagem_chatgpt
         
         cliente['outros_campos'] = outros_campos
         
