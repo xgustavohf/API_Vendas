@@ -1,6 +1,6 @@
 import openai
 
-openai.api_key = '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'
+openai.api_key = ''
 
 def gerar_mensagem_chatgpt():
     response = openai.Completion.create(
