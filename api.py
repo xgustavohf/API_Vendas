@@ -24,7 +24,7 @@ def conectar_bd():
 def homepage():
     return 'A API está funcionando'
 
-@app.route('/pegarvendas')
+@app.route('/vendas')
 def pegarvendas():
     conexao = conectar_bd()
     
