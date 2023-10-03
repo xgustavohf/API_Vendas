@@ -1,19 +1,20 @@
+import os
+import mysql.connector
 import pandas as pd
 from flask import Flask, jsonify
-import mysql.connector
 from collections import OrderedDict
-from chatgpt import gerar_mensagem_chatgpt 
+from chatgpt import gerar_mensagem_chatgpt
 
 app = Flask(__name__)
 
 def conectar_bd():
     try:
         conexao = mysql.connector.connect(
-            host='localhost',
-            port=3307,
+            host='containers-us-west-59.railway.app', 
             user='root',
-            password='root',
-            database='ghf_api'
+            password='uwmhxiiizEXGe1PBEcbG',
+            port=5809,  
+            database='railway'
         )
         return conexao
     except mysql.connector.Error as e:
@@ -27,37 +28,37 @@ def homepage():
 @app.route('/vendas')
 def pegarvendas():
     conexao = conectar_bd()
-    
+
     if conexao is None:
         return jsonify({"erro": "Não foi possível conectar ao banco de dados"})
-    
+
     consulta_sql = """
     SELECT idvendas, nome_completo, cpf, rg, data_nascimento, idade, sexo, email, uf, cep, cidade, endereco, telefone,
     janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro,
-    total_vendas, meta, status_financeiro
+    total_vendas, meta, status
     FROM vendas
     """
-    
+
     cursor = conexao.cursor()
     cursor.execute(consulta_sql)
-    
+
     resultado = cursor.fetchall()
-    
+
     cursor.close()
     conexao.close()
-    
+
     colunas = [i[0] for i in cursor.description]
     tabela = pd.DataFrame(resultado, columns=colunas)
-    
+
     # Realiza a soma das vendas mensais
     tabela['total_vendas'] = tabela.iloc[:, 13:25].sum(axis=1)
-    
+
     resposta = []
-    
+
     for _, row in tabela.iterrows():
         cliente = OrderedDict()
         cliente['idvendas'] = row['idvendas']
-        
+
         outros_campos = OrderedDict()
         outros_campos['nome_completo'] = row['nome_completo']
         outros_campos['cpf'] = row['cpf']
@@ -87,13 +88,13 @@ def pegarvendas():
         outros_campos['meta'] = row['meta']
 
         mensagem_chatgpt = gerar_mensagem_chatgpt()  # Chama a função do arquivo chatgpt
-        
-        outros_campos['status_financeiro'] = mensagem_chatgpt
-        
+
+        outros_campos['status'] = mensagem_chatgpt
+
         cliente['outros_campos'] = outros_campos
-        
+
         resposta.append(cliente)
-    
+
     return jsonify(resposta)
 
 if __name__ == '__main__':
