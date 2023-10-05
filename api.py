@@ -10,10 +10,10 @@ app = Flask(__name__)
 def conectar_bd():
     try:
         conexao = mysql.connector.connect(
-            host='containers-us-west-59.railway.app', 
+            host='containers-us-west-59.railway.app',
             user='root',
             password='uwmhxiiizEXGe1PBEcbG',
-            port=5809,  
+            port=5809,
             database='railway'
         )
         return conexao
@@ -35,7 +35,7 @@ def pegarvendas():
     consulta_sql = """
     SELECT idvendas, nome_completo, cpf, rg, data_nascimento, idade, sexo, email, uf, cep, cidade, endereco, telefone,
     janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro,
-    total_vendas, meta, status
+    meta, status
     FROM vendas
     """
 
@@ -50,8 +50,10 @@ def pegarvendas():
     colunas = [i[0] for i in cursor.description]
     tabela = pd.DataFrame(resultado, columns=colunas)
 
-    # Realiza a soma das vendas mensais
-    tabela['total_vendas'] = tabela.iloc[:, 13:25].sum(axis=1)
+    meses = ['janeiro', 'fevereiro', 'marco', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro']
+    tabela[meses] = tabela[meses].apply(pd.to_numeric, errors='coerce')
+    
+    tabela['total_vendas'] = tabela[meses].sum(axis=1)
 
     resposta = []
 
@@ -59,35 +61,11 @@ def pegarvendas():
         cliente = OrderedDict()
         cliente['idvendas'] = row['idvendas']
 
-        outros_campos = OrderedDict()
-        outros_campos['nome_completo'] = row['nome_completo']
-        outros_campos['cpf'] = row['cpf']
-        outros_campos['rg'] = row['rg']
-        outros_campos['data_nascimento'] = row['data_nascimento']
-        outros_campos['idade'] = row['idade']
-        outros_campos['sexo'] = row['sexo']
-        outros_campos['email'] = row['email']
-        outros_campos['uf'] = row['uf']
-        outros_campos['cep'] = row['cep']
-        outros_campos['cidade'] = row['cidade']
-        outros_campos['endereco'] = row['endereco']
-        outros_campos['telefone'] = row['telefone']
-        outros_campos['janeiro'] = row['janeiro']
-        outros_campos['fevereiro'] = row['fevereiro']
-        outros_campos['marco'] = row['marco']
-        outros_campos['abril'] = row['abril']
-        outros_campos['maio'] = row['maio']
-        outros_campos['junho'] = row['junho']
-        outros_campos['julho'] = row['julho']
-        outros_campos['agosto'] = row['agosto']
-        outros_campos['setembro'] = row['setembro']
-        outros_campos['outubro'] = row['outubro']
-        outros_campos['novembro'] = row['novembro']
-        outros_campos['dezembro'] = row['dezembro']
-        outros_campos['total_vendas'] = row['total_vendas']
-        outros_campos['meta'] = row['meta']
+        outros_campos = {col: row[col] for col in colunas if col != 'idvendas'}
 
-        mensagem_chatgpt = gerar_mensagem_chatgpt()  # Chama a função do arquivo chatgpt
+        outros_campos['total_vendas'] = '{:.2f}'.format(row['total_vendas'])
+
+        mensagem_chatgpt = gerar_mensagem_chatgpt() 
 
         outros_campos['status'] = mensagem_chatgpt
 
