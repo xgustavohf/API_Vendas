@@ -1,9 +1,10 @@
 import os
 import mysql.connector
 import pandas as pd
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template_string
 from collections import OrderedDict
 from chatgpt import gerar_mensagem_chatgpt
+
 
 app = Flask(__name__)
 
@@ -23,7 +24,11 @@ def conectar_bd():
 
 @app.route('/')
 def homepage():
-    return 'A API está funcionando'
+    button_html = '<button onclick="window.location.href=\'/vendas\'">Ir para a página de vendas</button>'
+
+    button_paragraph = f'<p>{button_html}</p>'
+
+    return render_template_string(f'A API está funcionando<br>{button_paragraph}')
 
 @app.route('/vendas')
 def pegarvendas():
@@ -35,7 +40,7 @@ def pegarvendas():
     consulta_sql = """
     SELECT idvendas, nome_completo, cpf, rg, data_nascimento, idade, sexo, email, uf, cep, cidade, endereco, telefone,
     janeiro, fevereiro, marco, abril, maio, junho, julho, agosto, setembro, outubro, novembro, dezembro,
-    meta, status
+    meta
     FROM vendas
     """
 
@@ -63,11 +68,20 @@ def pegarvendas():
 
         outros_campos = {col: row[col] for col in colunas if col != 'idvendas'}
 
-        outros_campos['total_vendas'] = '{:.2f}'.format(row['total_vendas'])
+        outros_campos['total_vendas'] = row['total_vendas']
 
-        mensagem_chatgpt = gerar_mensagem_chatgpt() 
+        
+        meta = row['meta']
+        total_vendas = row['total_vendas']
+        if total_vendas >= meta: 
+            status = "Colaborador atingiu a meta."
+        else:
+            status = "Colaborador não atingiu a meta."
 
-        outros_campos['status'] = mensagem_chatgpt
+        
+        mensagem_chatgpt = gerar_mensagem_chatgpt(status)
+
+        outros_campos['status'] = mensagem_chatgpt  
 
         cliente['outros_campos'] = outros_campos
 
